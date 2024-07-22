@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>МАКАКА КОД</title>
+    <style>
+
+        .right-side-table {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 20%;
+            height: 100%;
+            overflow-y: auto;
+            background-color: white;
+            border-left: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+         table td {
+             font-family: Times New Roman, sans-serif;
+             font-size: 17px;
+             word-wrap: break-word;
+             max-width: 10%;
+             padding: 5px;
+             border-bottom: 1px solid #eee;
+         }
+
+         table tr:hover {
+             background-color: #f5f5f5;
+         }
+
+         thead tr {
+             background-color: #e0e0e0;
+             font-weight: bold;
+             font-size: larger;
+         }
+        textarea#description{
+            height: 60px;
+        }
+
+        textarea#name{
+            height: 22px;
+        }
+
+        textarea#time{
+            height: 22px;
+        }
+
+        textarea{
+            margin-right: 25%;
+            flex-grow: 1;
+        }
+        textarea, label, select {
+            font-family: Times New Roman, sans-serif;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .submit-button {
+            font-family: Times New Roman, sans-serif;
+            font-size: 20px;
+            line-height: 1;
+            width: 115px;
+            height: 37px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .CodeMirror {
+            margin-right: 25%;
+            height: auto;
+            overflow-y: hidden;
+            min-height: 100px;
+        }
+
+    </style>
+    <link rel="shortcut icon" href="/static/icons/makaka1.ico">
+    <script src="static/themes/jquery.min.js"></script>
+    <link href="static/themes/select2.min.css" rel="stylesheet"/>
+    <script src="static/themes/select2.min.js"></script>
+    <link href="static/themes/prism.css" rel="stylesheet"/>
+    <script src="static/themes/prism.js"></script>
+
+    <script src="static/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="static/codemirror/lib/codemirror.css">
+    <script src="static/codemirror/mode/xml/xml.js"></script>
+    <script src="static/codemirror/mode/javascript/javascript.js"></script>
+    <script src="static/codemirror/mode/python/python.js"></script>
+    <script src="static/codemirror/mode/css/css.js"></script>
+    <script src="static/codemirror/mode/clike/clike.js"></script>
+    <script src="static/codemirror/mode/go/go.js"></script>
+    <script src="static/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="static/codemirror/mode/php/php.js"></script>
+    <script src="static/codemirror/mode/pascal/pascal.js"></script>
+    <script src="static/codemirror/mode/ruby/ruby.js"></script>
+    <script src="static/codemirror/mode/swift/swift.js"></script>
+    <script src="static/codemirror/mode/perl/perl.js"></script>
+    <script src="static/codemirror/mode/r/r.js"></script>
+    <script src="static/codemirror/mode/lua/lua.js"></script>
+    <script src="static/codemirror/mode/sql/sql.js"></script>
+    <script src="static/codemirror/mode/shell/shell.js"></script>
+</head>
+
+
+<body>
+
+<div class="right-side-table">
+    <table>
+        <thead>
+        <tr>
+            <th colspan="2">ТОП 10 кодов по количеству бананов</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for code in top_codes_ %}
+        <tr>
+            <td><a href="/{{code.hash}}">{{code.title}}</a></td>
+            <td>Бананы: {{code.bananas}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<form action="/submit-code" method="post">
+    <label for="language">Выберите язык программирования:</label>
+
+    <select name="language" id="language">
+        <option value="language-html/HTML">HTML</option>
+        <option value="language-xml/XML">XML</option>
+        <option value="language-svg/SVG">SVG</option>
+        <option value="language-mathml/MathML">MathML</option>
+        <option value="language-ssml/SSML">SSML</option>
+        <option value="language-rss/RSS">RSS</option>
+        <option value="language-css/CSS">CSS</option>
+        <option value="language-clike/C-like">C-like</option>
+        <option value="language-js/JavaScript">JavaScript</option>
+        <option value="language-abap/ABAP">ABAP</option>
+        <option value="language-abnf/ABNF">ABNF</option>
+        <option value="language-al/AL">AL</option>
+        <option value="language-antlr4/ANTLR4">ANTLR4</option>
+        <option value="language-apacheconf/Apache Configuration">Apache Configuration</option>
+        <option value="language-apl/APL">APL</option>
+        <option value="language-aql/AQL">AQL</option>
+        <option value="language-arduino/Arduino">Arduino</option>
+        <option value="language-arff/ARFF">ARFF</option>
+        <option value="language-armasm/ARM Assembly">ARM Assembly</option>
+        <option value="language-art/Arturo">Arturo</option>
+        <option value="language-asciidoc/AsciiDoc">AsciiDoc</option>
+        <option value="language-aspnet/ASP.NET (C#)">ASP.NET (C#)</option>
+        <option value="language-asm6502/6502 Assembly">6502 Assembly</option>
+        <option value="language-asmatmel/Atmel AVR Assembly">Atmel AVR Assembly</option>
+        <option value="language-autohotkey/AutoHotkey">AutoHotkey</option>
+        <option value="language-autoit/AutoIt">AutoIt</option>
+        <option value="language-avisynth/AviSynth">AviSynth</option>
+        <option value="language-avro-idl/Avro IDL">Avro IDL</option>
+        <option value="language-awk/AWK">AWK</option>
+        <option value="language-basic/BASIC">BASIC</option>
+        <option value="language-bbcode/BBcode">BBcode</option>
+        <option value="language-bbj/BBj">BBj</option>
+        <option value="language-bnf/BNF">BNF</option>
+        <option value="language-bqn/BQN">BQN</option>
+        <option value="language-bsl/BSL (1C:Enterprise)">BSL (1C:Enterprise)</option>
+        <option value="language-csharp/C#">C#</option>
+        <option value="language-cpp/C++">C++</option>
+        <option value="language-cfscript/CFScript">CFScript</option>
+        <option value="language-cil/CIL">CIL</option>
+        <option value="language-cmake/CMake">CMake</option>
+        <option value="language-cobol/COBOL">COBOL</option>
+        <option value="language-coffee/CoffeeScript">CoffeeScript</option>
+        <option value="language-conc/Concurnas">Concurnas</option>
+        <option value="language-csp/Content-Security-Policy">Content-Security-Policy</option>
+        <option value="language-css-extras/CSS Extras">CSS Extras</option>
+        <option value="language-csv/CSV">CSV</option>
+        <option value="language-cue/CUE">CUE</option>
+        <option value="language-dataweave/DataWeave">DataWeave</option>
+        <option value="language-dax/DAX">DAX</option>
+        <option value="language-django/Django/Jinja2">Django/Jinja2</option>
+        <option value="language-dns-zone-file/DNS zone file">DNS zone file</option>
+        <option value="language-dockerfile/Docker">Docker</option>
+        <option value="language-dot/DOT (Graphviz)">DOT (Graphviz)</option>
+        <option value="language-ebnf/EBNF">EBNF</option>
+        <option value="language-editorconfig/EditorConfig">EditorConfig</option>
+        <option value="language-ejs/EJS">EJS</option>
+        <option value="language-etlua/Embedded Lua templating">Embedded Lua templating</option>
+        <option value="language-erb/ERB">ERB</option>
+        <option value="language-excel-formula/Excel Formula">Excel Formula</option>
+        <option value="language-fsharp/F#">F#</option>
+        <option value="language-firestore-security-rules/Firestore security rules">Firestore security rules</option>
+        <option value="language-ftl/FreeMarker Template Language">FreeMarker Template Language</option>
+        <option value="language-gml/GameMaker Language">GameMaker Language</option>
+        <option value="language-gap/GAP (CAS)">GAP (CAS)</option>
+        <option value="language-gcode/G-code">G-code</option>
+        <option value="language-gdscript/GDScript">GDScript</option>
+        <option value="language-gedcom/GEDCOM">GEDCOM</option>
+        <option value="language-gettext/gettext">gettext</option>
+        <option value="language-glsl/GLSL">GLSL</option>
+        <option value="language-gn/GN">GN</option>
+        <option value="language-go-module/Go module">Go module</option>
+        <option value="language-graphql/GraphQL">GraphQL</option>
+        <option value="language-hbs/Handlebars">Handlebars</option>
+        <option value="language-haskell/Haskell">Haskell</option>
+        <option value="language-hcl/HCL">HCL</option>
+        <option value="language-hlsl/HLSL">HLSL</option>
+        <option value="language-http/HTTP">HTTP</option>
+        <option value="language-ichigojam/IchigoJam">IchigoJam</option>
+        <option value="language-icu-message-format/ICU Message Format">ICU Message Format</option>
+        <option value="language-idris/Idris">Idris</option>
+        <option value="language-ignore/.ignore">.ignore</option>
+        <option value="language-inform7/Inform 7">Inform 7</option>
+        <option value="language-javadoc/JavaDoc">JavaDoc</option>
+        <option value="language-jq/JQ">JQ</option>
+        <option value="language-jsdoc/JSDoc">JSDoc</option>
+        <option value="language-json/JSON">JSON</option>
+        <option value="language-webmanifest/Web App Manifest">Web App Manifest</option>
+        <option value="language-json5/JSON5">JSON5</option>
+        <option value="language-jsonp/JSONP">JSONP</option>
+        <option value="language-js-templates/JS Templates">JS Templates</option>
+        <option value="language-kotlin/Kotlin">Kotlin</option>
+        <option value="language-latex/LaTeX">LaTeX</option>
+        <option value="language-moon/MoonScript">MoonScript</option>
+        <option value="language-n1ql/N1QL">N1QL</option>
+        <option value="language-n4js/N4JS">N4JS</option>
+        <option value="language-nand2tetris-hdl/Nand To Tetris HDL">Nand To Tetris HDL</option>
+        <option value="language-naniscript/Naninovel Script">Naninovel Script</option>
+        <option value="language-nasm/NASM">NASM</option>
+        <option value="language-neon/NEON">NEON</option>
+        <option value="language-nginx/nginx">nginx</option>
+        <option value="language-nsis/NSIS">NSIS</option>
+        <option value="language-objectivec/Objective-C">Objective-C</option>
+        <option value="language-ocaml/OCaml">OCaml</option>
+        <option value="language-opencl/OpenCL">OpenCL</option>
+        <option value="language-openqasm/OpenQasm">OpenQasm</option>
+        <option value="language-parigp/PARI/GP">PARI/GP</option>
+        <option value="language-objectpascal/Object Pascal">Object Pascal</option>
+        <option value="language-psl/PATROL Scripting Language">PATROL Scripting Language</option>
+        <option value="language-pcaxis/PC-Axis">
+        <option value="language-pcaxis/PC-Axis">PC-Axis</option>
+        <option value="language-peoplecode/PeopleCode">PeopleCode</option>
+        <option value="language-php/PHP">PHP</option>
+        <option value="language-phpdoc/PHPDoc">PHPDoc</option>
+        <option value="language-php-extras/PHP Extras">PHP Extras</option>
+        <option value="language-plant-uml/PlantUML">PlantUML</option>
+        <option value="language-plsql/PL/SQL">PL/SQL</option>
+        <option value="language-powerquery/PowerQuery">PowerQuery</option>
+        <option value="language-powershell/PowerShell">PowerShell</option>
+        <option value="language-promql/PromQL">PromQL</option>
+        <option value="language-properties/.properties">.properties</option>
+        <option value="language-protobuf/Protocol Buffers">Protocol Buffers</option>
+        <option value="language-purebasic/PureBasic">PureBasic</option>
+        <option value="language-purs/PureScript">PureScript</option>
+        <option value="language-py/Python">Python</option>
+        <option value="language-qsharp/Q#">Q#</option>
+        <option value="language-q/Q (kdb+ database)">Q (kdb+ database)</option>
+        <option value="language-qml/QML">QML</option>
+        <option value="language-rkt/Racket">Racket</option>
+        <option value="language-cshtml/Razor C#">Razor C#</option>
+        <option value="language-jsx/React JSX">React JSX</option>
+        <option value="language-tsx/React TSX">React TSX</option>
+        <option value="language-renpy/Ren'py">Ren'py</option>
+        <option value="language-res/ReScript">ReScript</option>
+        <option value="language-rest/reST (reStructuredText)">reST (reStructuredText)</option>
+        <option value="language-robotframework/Robot Framework">Robot Framework</option>
+        <option value="language-rb/Ruby">Ruby</option>
+        <option value="language-sas/SAS">SAS</option>
+        <option value="language-sass/Sass (Sass)">Sass (Sass)</option>
+        <option value="language-scss/Sass (SCSS)">Sass (SCSS)</option>
+        <option value="language-shell-session/Shell session">Shell session</option>
+        <option value="language-sml/SML">SML</option>
+        <option value="language-solidity/Solidity (Ethereum)">Solidity (Ethereum)</option>
+        <option value="language-solution-file/Solution file">Solution file</option>
+        <option value="language-soy/Soy (Closure Template)">Soy (Closure Template)</option>
+        <option value="language-sparql/SPARQL">SPARQL</option>
+        <option value="language-splunk-spl/Splunk SPL">Splunk SPL</option>
+        <option value="language-sqf/SQF: Status Quo Function (Arma 3)">SQF: Status Quo Function (Arma 3)</option>
+        <option value="language-sql/SQL">SQL</option>
+        <option value="language-stata/Stata Ado">Stata Ado</option>
+        <option value="language-iecst/Structured Text (IEC 61131-3)">Structured Text (IEC 61131-3)</option>
+        <option value="language-supercollider/SuperCollider">SuperCollider</option>
+        <option value="language-systemd/Systemd configuration file">Systemd configuration file</option>
+        <option value="language-t4-templating/T4 templating">T4 templating</option>
+        <option value="language-tap/TAP">TAP</option>
+        <option value="language-tt2/Template Toolkit 2">Template Toolkit 2</option>
+        <option value="language-toml/TOML">TOML</option>
+        <option value="language-trickle/trickle">trickle</option>
+        <option value="language-troy/troy">troy</option>
+        <option value="language-trig/TriG">TriG</option>
+        <option value="language-ts/TypeScript">TypeScript</option>
+        <option value="language-tsconfig/TSConfig">TSConfig</option>
+        <option value="language-uscript/UnrealScript">UnrealScript</option>
+        <option value="language-uorazor/UO Razor Script">UO Razor Script</option>
+        <option value="language-uri/URI">URI</option>
+        <option value="language-vbnet/VB.Net">VB.Net</option>
+        <option value="language-vhdl/VHDL">VHDL</option>
+        <option value="language-vim/vim">vim</option>
+        <option value="language-visual-basic/Visual Basic">Visual Basic</option>
+        <option value="language-wasm/WebAssembly">WebAssembly</option>
+        <option value="language-web-idl/Web IDL">Web IDL</option>
+        <option value="language-wgsl/WGSL">WGSL</option>
+        <option value="language-wiki/Wiki markup">Wiki markup</option>
+        <option value="language-wolfram/Wolfram language">Wolfram language</option>
+        <option value="language-xeoracube/XeoraCube">XeoraCube</option>
+        <option value="language-xojo/Xojo (REALbasic)">Xojo (REALbasic)</option>
+        <option value="language-xquery/XQuery">XQuery</option>
+        <option value="language-yaml/YAML">YAML</option>
+        <option value="language-yang/YANG">YANG</option>
+    </select>
+
+    <br><br>
+    <div style="display: flex; align-items: center; width: 100%;">
+        <label for="name" style="margin-right: 10px;">Название кода:</label>
+        <textarea id="name" name="name" maxlength="30"></textarea>
+    </div>
+    <br>
+    <div style="display: flex; align-items: center; width: 100%;">
+        <label for="description" style="margin-right: 10px;">Описание кода:</label>
+        <textarea id="description" name="description"></textarea>
+    </div>
+    <br>
+    <div style="display: flex; align-items: center; width: 100%;">
+        <label for="time" style="margin-right: 10px;">Время через которое удалится код (в часах):</label>
+        <textarea id="time" name="time">1</textarea>
+    </div>
+
+    <br>
+    <label for="code">Вставьте ваш код:</label>
+    <br><textarea id="code" name="code"></textarea>
+    <br>
+    <input class = "submit-button" type = "submit" value="Отправить">
+
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#language').select2({
+            width: '35%',
+            placeholder: "Выберите язык программирования",
+        });
+    });
+</script>
+
+
+<script>
+
+    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('code'), {
+        mode: "htmlmixed", // начальный режим
+        lineNumbers: true,
+        theme: "default",
+        viewportMargin: Infinity  // Устанавливаем viewportMargin на Infinity
+    });
+
+    function updateEditorSize() {
+        var doc = myCodeMirror.getDoc();
+        var contentHeight = myCodeMirror.defaultTextHeight() * doc.lineCount() + 2 * myCodeMirror.defaultTextHeight();
+        myCodeMirror.setSize(null, contentHeight);
+    }
+
+    myCodeMirror.on('change', updateEditorSize);
+    updateEditorSize(); // Вызов при инициализации для установки начального размера
+
+    $('#language').on('change', function() {
+        var language = $(this).val();
+        var mode = "htmlmixed"; // режим по умолчанию
+
+        // Определение режима в зависимости от выбранного языка
+        switch(language) {
+            case "language-js/JavaScript":
+                mode = "javascript";
+                break;
+            case "language-py/Python":
+                mode = "python";
+                break;
+            case "language-php/PHP":
+                mode = "php";
+                break;
+            case "language-html/HTML":
+                mode = "htmlmixed";
+                break;
+            case "language-css/CSS":
+                mode = "css";
+                break;
+            case "language-c/C":
+            case "language-cpp/C++":
+            case "language-java/Java":
+            case "language-csharp/C#":
+            case "language-scala/Scala":
+            case "language-kotlin/Kotlin":
+                mode = "clike";
+                break;
+            case "language-xml/XML":
+                mode = "xml";
+                break;
+            case "language-go/Go":
+                mode = "go";
+                break;
+            case "language-pascal/Pascal":
+                mode = "pascal";
+                break;
+            case "language-ruby/Ruby":
+                mode = "ruby";
+                break;
+            case "language-swift/Swift":
+                mode = "swift";
+                break;
+            case "language-perl/Perl":
+                mode = "perl";
+                break;
+            case "language-r/R":
+                mode = "r";
+                break;
+            case "language-lua/Lua":
+                mode = "lua";
+                break;
+            case "language-typescript/TypeScript":
+            case "language-json/JSON":
+                mode = "javascript";
+                break;
+            case "language-sql/SQL":
+                mode = "sql";
+                break;
+            case "language-bash/Bash":
+                mode = "shell";
+                break;
+            // добавьте другие языки и соответствующие режимы
+        }
+
+        myCodeMirror.setOption("mode", mode);
+    });
+</script>
+
+</body>
+</html>

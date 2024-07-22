@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<link rel="shortcut icon" href="/static/icons/{{icon_}}.ico">
+<script src="static/themes/jquery.min.js"></script>
+<link href="static/themes/select2.min.css" rel="stylesheet"/>
+<script src="static/themes/select2.min.js"></script>
+<link href="static/themes/prism.css" rel="stylesheet"/>
+<script src="static/themes/prism.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>{{title_}}</title>
+    <style>
+        .toolbar {
+            margin-right: 25%;
+        }
+        .container {
+            text-align: center;
+            margin-top: 1%;
+            margin-right: 310px;
+        }
+        .right-side-table {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 20%;
+            height: 100%;
+            overflow-y: auto;
+            background-color: white;
+            border-left: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        table td {
+            word-wrap: break-word;
+            max-width: 10%;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        thead tr {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+        thead tr th {
+            font-size: larger;
+        }
+
+        .banana-btn {
+            margin-top: 1%;
+            margin-left: 65%;
+            font-family: Times New Roman, sans-serif;
+            font-size: 18px;
+            line-height: 1;
+            width: 150px;
+            height: 40px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .banana-btn:active {
+            border: 2px solid #000;
+        }
+        h1 {
+            position: absolute;
+            top: 0;
+        }
+    </style>
+
+</head>
+
+
+<body>
+<div class="right-side-table">
+    <table>
+        <thead>
+        <tr>
+            <th colspan="2">ТОП 10 кодов по количеству бананов</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for code in top_codes_ %}
+        <tr>
+            <td><a href="/{{code.hash}}">{{code.title}}</a></td>
+            <td>Бананы: {{code.bananas}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<button class="banana-btn" onclick="giveBanana()">{{give_banana_}}</button>
+<h1>
+    Описание кода:
+</h1>
+<h2>
+    {{code_description_}}
+</h2>
+
+<pre style="margin-right:25%" class="line-numbers"> <code style="display : default" class={{language_}}>
+            {{code_}}
+        </code></pre>
+
+</body>
+<script>
+    function giveBanana() {
+        $.ajax({
+            url: '/give_banana/{{code_hash_}}',
+            type: 'POST',
+        });
+    }
+</script>
+</html>
