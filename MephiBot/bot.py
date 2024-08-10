@@ -13,7 +13,11 @@ dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Hello!")
+    await message.answer("Hello! let's start")
+
+@dp.message(Command("help"))
+async def cmd_start(message: types.Message):
+    await message.answer("Hello! I will help you")
 
 async def main():
     await dp.start_polling(bot)
