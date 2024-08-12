@@ -49,7 +49,13 @@ class GameInfo:
 
     def get_next_free_station(self, team_name: str):
         team_stations: set = self.non_visited_list[team_name]
+
+        print(f"abra {team_stations}")
+        
+        print()
+
         for station_name in team_stations:
+            print(f"pum pum {station_name}")
             if self.is_station_free(station_name):
                 next_free_station = station_name
                 self.non_visited_list[team_name].remove(station_name)
