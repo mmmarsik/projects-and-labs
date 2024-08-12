@@ -17,7 +17,7 @@ dp = Dispatcher()
 
 
 game_info = GameInfo(
-    caretakers={593807464: "Shreks", 1808760043: "Taxi-rider"},
+    caretakers={593807464: "Shreks", 1808760043: "Taxi-rider", 1413950580: "Ninja"},
     admins={},
     stations={"Shreks": True, "Taxi-rider": True, "Fax": True, "Crazy_frog": True,
               "Dancer": True, "Magic": True, "Ninja": True}
