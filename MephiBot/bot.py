@@ -17,11 +17,16 @@ dp = Dispatcher()
 
 
 game_info = GameInfo(
-    caretakers={593807464: "Shreks", 1808760043: "Taxi-rider", 1413950580: "Ninja"},
+    caretakers={593807464: "Shreks",
+                1808760043: "Taxi-rider", 1413950580: "Ninja"},
     admins={},
-    stations={"Shreks": True, "Taxi-rider": True, "Fax": True, "Crazy_frog": True,
-              "Dancer": True, "Magic": True, "Ninja": True}
+    stations_list={"Shreks", "Taxi-rider", "Fax",
+                   "Crazy_frog", "Dancer", "Magic", "Ninja"},
+    teams={"tigers", "bober", "lion", "kingkong"},
+
 )
+
+game_info.team_on_station["Shreks"] = "lion"
 
 
 @dp.message(Command("start"))
@@ -30,10 +35,10 @@ async def cmd_start(message: types.Message):
     if station:
         await message.answer(
             (f"Привет, {message.from_user.full_name}, твоя станция это - {station}\n"
-             f"Чтобы начать работу, напиши команду: /work"))
+             f"Чтобы начать , напиши команду: /go"))
 
 
-@dp.message(Command("work"))
+@dp.message(Command("go"))
 async def cmd_work(message: types.Message):
     builder = ReplyKeyboardBuilder()
 
@@ -51,50 +56,43 @@ async def cmd_work(message: types.Message):
 @dp.message(F.text.lower() == "принять новую команду")
 async def accept_new_task(message: types.Message):
     station = game_info.get_station_by_id(message.from_user.id)
-    if station and game_info.is_station_free(station):
-        game_info.set_station_status(station, False)
-        await message.reply(f"Вы успешно приняли новую команду на станцию {station}.")
+    team = game_info.get_team_by_station(station)
+
+    print(f"station is {station} and team is {team}")
+
+    if station and team:
+        game_info.start_station_progress(station)
+        await message.reply(f"Вы успешно приняли новую команду '{team}' на станцию {station}.")
     else:
         await message.reply("Не удалось принять команду. Ваша станция занята или не найдена.")
 
 
 @dp.message(F.text.lower() == "перенаправить текущую команду")
 async def redirect_task(message: types.Message):
-    free_stations = game_info.get_free_stations()
-
-    if not free_stations:
-        await message.reply("Нет свободных станций для перенаправления команды.")
-        return
-
-    builder = ReplyKeyboardBuilder()
-
-    for station in free_stations:
-        builder.add(types.KeyboardButton(text=station))
-
-    builder.adjust(3)
-
-    await message.answer(
-        "Выберите станцию для перенаправления команды:",
-        reply_markup=builder.as_markup(
-            resize_keyboard=True, one_time_keyboard=True),
-    )
-
-
-@dp.message(F.text.in_(game_info.get_free_stations()))
-async def handle_station_selection(message: types.Message):
-    selected_station = message.text
     station = game_info.get_station_by_id(message.from_user.id)
+    team_name = game_info.get_team_by_station(station)
 
-    if station and selected_station:
+    game_info.free_station(station)
 
-        game_info.set_station_status(station, True)
-        game_info.set_station_status(
-            selected_station, False)
-        await message.reply(f"Команда успешно перенаправлена на станцию {selected_station}.")
+    if station:
+        next_free_station = game_info.get_next_free_station(team_name)
 
-        for user_id, user_station in game_info.caretakers.items():
-            if user_station == selected_station:
-                await bot.send_message(user_id, f"К вам перенаправлена команда от станции {station}.")
+        if next_free_station:
+            game_info.lock_station(next_free_station, team_name)
+
+            next_station_caretaker_id = game_info.get_id_by_station(
+                next_free_station)
+            if next_station_caretaker_id:
+                await bot.send_message(next_station_caretaker_id, f"К вам идет команда '{team_name}'.")
+
+            await message.answer(
+                f"Команда '{team_name}' перенаправлена на станцию {
+                    next_free_station}."
+            )
+        else:
+            await message.reply("Нет доступных станций для перенаправления.")
+    else:
+        await message.reply("Нет активных команд для перенаправления.")
 
 
 async def main():
