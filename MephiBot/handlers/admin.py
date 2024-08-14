@@ -5,6 +5,8 @@ from aiogram.filters import BaseFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, State, StatesGroup
 from aiogram.filters import StateFilter
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram import types
 
 
 from bot import game_info
@@ -49,20 +51,68 @@ async def cmd_register(message: Message, state: FSMContext):
     await state.set_state(FSMStatesRegister.choose_name)
 
 
-@admin_router.message(StateFilter(FSMStatesRegister.choose_name), F.text.isalpha())
+@admin_router.message(StateFilter(FSMStatesRegister.choose_name), F.text)
 async def process_name_sent(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
+
+    builder = ReplyKeyboardBuilder()
+
+    builder.add(types.KeyboardButton(text="Да"))
+    builder.add(types.KeyboardButton(text="Нет"))
+    builder.adjust(2)
+
     await message.answer(f"Вы ввели название команды: {message.text}\n"
-                         f"Подтверждаете?")
+                         f"Верно?", reply_markup=builder.as_markup(resize_keyboard=True),)
+
     await state.set_state(FSMStatesRegister.accept_info)
 
 
-@admin_router.message(StateFilter(FSMStatesRegister.fill_name))
+@admin_router.message(StateFilter(FSMStatesRegister.choose_name))
 async def warning_not_name(message: Message):
     await message.answer(
         f'То, что вы отправили не похоже на название команды\n\n'
-        f'Пожалуйста, верное название\n\n'
+        f'Пожалуйста, введите верное название\n\n'
         f'Если вы хотите прервать заполнение - '
         f'отправьте команду /cancel'
     )
+
+
+@admin_router.message(StateFilter(FSMStatesRegister.accept_info), F.text.lower() == "да")
+async def cheking_correct_name(message: Message, state: FSMContext):
+    team_name: str = FSMContext.get_data()["name"]
+    game_info.add_team(team_name)
+    await state.clear()
+    await message.answer(f"Вы успешно зарегистрировали команду {team_name}\n"
+                         f"Чтобы посмотреть список зарегистрированных команд напишите /showteams")
+
+@admin_router.message(Command("showteams"))
+async def cmd_show_teams(message: Message):
+    string_teams_presentation: str = ""
+    for team in game_info.teams:
+        string_teams_presentation += team
+        string_teams_presentation += " "
+    await message.answer(f"{string_teams_presentation}")
+
+@admin_router.message(StateFilter(FSMStatesRegister.accept_info), F.text.lower() == "нет")
+async def cheking_correct_name(message: Message, state: FSMContext):
+    state.clear()
+    await message.answer(f"Процесс регистрации был отменен, чтобы повторить напишите /register")
+
+@admin_router.message(StateFilter(FSMStatesRegister.accept_info))
+async def cheking_not_correct_name(message: Message, state: FSMContext):
+     await message.answer(
+        f'Вы отправили что-то некорректное\n\n'
+        f'Пожалуйста, напишите Да, если название верно, иначе напишите Нет\n\n'
+        f'Если вы хотите прервать заполнение - '
+        f'отправьте команду /cancel'
+    )
+
+    
+
+
+
+
+
+
+
 

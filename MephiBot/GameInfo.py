@@ -15,6 +15,11 @@ class GameInfo:
             self.stations_status[station] = "free"
             self.team_on_station[station] = None  
 
+    def add_team(self, team_name: str):
+        self.teams.add(team_name)
+        self.non_visited_list[team_name] = self.stations_list.copy() 
+
+
     def is_station_free(self, station_name: str):
         return self.stations_status.get(station_name) == "free"
 
