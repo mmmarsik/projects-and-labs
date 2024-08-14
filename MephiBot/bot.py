@@ -14,10 +14,9 @@ dp = Dispatcher(storage=storage)
 
 game_info = GameInfo(
     caretakers={1808760043: "Taxi-rider"},
-    admins={593807464},
-    stations_list={"Shreks", "Taxi-rider", "Fax",
-                   "Crazy_frog", "Dancer", "Magic", "Ninja"},
-    teams={"tigers", "bober", "lion", "kingkong"},
+    admins={593807464, 1413950580},
+    stations_list={"Shreks", "Taxi-rider", "Fax"},
+    teams=set(),
 
 )
 

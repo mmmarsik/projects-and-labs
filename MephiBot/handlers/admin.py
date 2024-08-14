@@ -7,6 +7,7 @@ from aiogram.fsm.state import default_state, State, StatesGroup
 from aiogram.filters import StateFilter
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram import types
+from bot import bot
 
 
 from bot import game_info
@@ -20,6 +21,7 @@ class IsAdminFilter(BaseFilter):
 
 admin_router = Router()
 admin_router.message.filter(IsAdminFilter())
+user_dict = dict()
 
 
 class FSMStatesRegister(StatesGroup):
@@ -51,7 +53,7 @@ async def cmd_register(message: Message, state: FSMContext):
     await state.set_state(FSMStatesRegister.choose_name)
 
 
-@admin_router.message(StateFilter(FSMStatesRegister.choose_name), F.text)
+@admin_router.message(StateFilter(FSMStatesRegister.choose_name), F.text.isalpha())
 async def process_name_sent(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
 
@@ -79,15 +81,33 @@ async def warning_not_name(message: Message):
 
 @admin_router.message(StateFilter(FSMStatesRegister.accept_info), F.text.lower() == "да")
 async def cheking_correct_name(message: Message, state: FSMContext):
-    team_name: str = FSMContext.get_data()["name"]
-    game_info.add_team(team_name)
+    data = await state.get_data()
+    team_name: str = data.get("name")
 
-    next_station: str = game_info.get_next_free_station(team_name)
-    game_info.lock_station(next_station, team_name)
+    if team_name:
+        game_info.add_team(team_name)
 
-    await state.clear()
-    await message.answer(f"Вы успешно зарегистрировали команду {team_name}\n, она отправлена на станцию {next_station}"
-                         f"Чтобы посмотреть список зарегистрированных команд напишите /showteams")
+        next_station: str = game_info.get_next_free_station(team_name)
+
+        if not next_station:
+            await state.clear()
+            await message.answer("Произошла ошибка: Все станции заняты.")
+            return
+
+        game_info.lock_station(next_station, team_name)
+
+        next_caretaker_id: int = game_info.get_id_by_station(next_station)
+
+        if next_caretaker_id:
+            await bot.send_message(game_info.get_id_by_station(next_station), f"На вашу станцию направлена команда {team_name}")
+
+        await state.clear()
+        await message.answer(f"Успешно зарегистрирована команда {team_name}.\nОна отправлена на станцию {next_station}.\n"
+                             f"Чтобы посмотреть список зарегистрированных команд напишите /showteams\n\n"
+                             f"Чтобы регистрировать другие команды напишите: /register")
+    else:
+        await message.answer("Произошла ошибка: не удалось подтвердить регистрацию команды.")
+
 
 @admin_router.message(Command("showteams"))
 async def cmd_show_teams(message: Message):
@@ -95,31 +115,23 @@ async def cmd_show_teams(message: Message):
     for team in game_info.teams:
         string_teams_presentation += team
         string_teams_presentation += " "
-    if (len(string_teams_presentation) > 0 ):
+    if (len(string_teams_presentation) > 0):
         await message.answer(f"{string_teams_presentation}")
     else:
         await message.answer(f"Пока что не было зарегистрировано ни одной команды")
 
+
 @admin_router.message(StateFilter(FSMStatesRegister.accept_info), F.text.lower() == "нет")
 async def cheking_correct_name(message: Message, state: FSMContext):
-    state.clear()
+    await state.clear()
     await message.answer(f"Процесс регистрации был отменен, чтобы повторить напишите /register")
+
 
 @admin_router.message(StateFilter(FSMStatesRegister.accept_info))
 async def cheking_not_correct_name(message: Message, state: FSMContext):
-     await message.answer(
+    await message.answer(
         f'Вы отправили что-то некорректное\n\n'
         f'Пожалуйста, напишите Да, если название верно, иначе напишите Нет\n\n'
         f'Если вы хотите прервать заполнение - '
         f'отправьте команду /cancel'
     )
-
-    
-
-
-
-
-
-
-
-
