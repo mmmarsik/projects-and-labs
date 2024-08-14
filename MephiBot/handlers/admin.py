@@ -81,8 +81,12 @@ async def warning_not_name(message: Message):
 async def cheking_correct_name(message: Message, state: FSMContext):
     team_name: str = FSMContext.get_data()["name"]
     game_info.add_team(team_name)
+
+    next_station: str = game_info.get_next_free_station(team_name)
+    game_info.lock_station(next_station, team_name)
+
     await state.clear()
-    await message.answer(f"Вы успешно зарегистрировали команду {team_name}\n"
+    await message.answer(f"Вы успешно зарегистрировали команду {team_name}\n, она отправлена на станцию {next_station}"
                          f"Чтобы посмотреть список зарегистрированных команд напишите /showteams")
 
 @admin_router.message(Command("showteams"))
@@ -91,7 +95,10 @@ async def cmd_show_teams(message: Message):
     for team in game_info.teams:
         string_teams_presentation += team
         string_teams_presentation += " "
-    await message.answer(f"{string_teams_presentation}")
+    if (len(string_teams_presentation) > 0 ):
+        await message.answer(f"{string_teams_presentation}")
+    else:
+        await message.answer(f"Пока что не было зарегистрировано ни одной команды")
 
 @admin_router.message(StateFilter(FSMStatesRegister.accept_info), F.text.lower() == "нет")
 async def cheking_correct_name(message: Message, state: FSMContext):
