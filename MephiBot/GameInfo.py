@@ -15,8 +15,6 @@ class GameInfo:
             self.stations_status[station] = "free"
             self.team_on_station[station] = None  
 
-    
-
 
     def is_station_free(self, station_name: str):
         return self.stations_status.get(station_name) == "free"

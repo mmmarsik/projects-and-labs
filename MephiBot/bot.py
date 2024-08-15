@@ -1,3 +1,4 @@
+from handlers import caretaker, admin
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher
@@ -21,8 +22,6 @@ game_info = GameInfo(
 )
 
 logging.basicConfig(level=logging.INFO)
-
-from handlers import caretaker, admin
 
 
 async def main():
