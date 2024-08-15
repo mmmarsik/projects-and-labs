@@ -1,4 +1,3 @@
-from handlers import caretaker, admin
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher
@@ -14,14 +13,14 @@ dp = Dispatcher(storage=storage)
 
 
 game_info = GameInfo(
-    caretakers={1808760043: "Taxi-rider"},
+    caretakers={1808760043: "Shreks-1"},
     admins={593807464, 1413950580},
-    stations_list={"Shreks", "Taxi-rider", "Fax"},
-    teams=set(),
-
+    location_list=[("Shreks", 1), ("Taxi", 1), ("Water-Sport", 1)]
 )
 
 logging.basicConfig(level=logging.INFO)
+
+from handlers import caretaker, admin
 
 
 async def main():
